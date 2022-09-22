@@ -1,6 +1,10 @@
-import { ApplicationCommandOptionType, CommandInteraction, EmbedBuilder } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  CommandInteraction,
+  EmbedBuilder,
+} from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
-import axios from 'axios';
+import axios from "axios";
 import { Database } from "../database.js";
 
 @Discord()
@@ -11,57 +15,64 @@ export class EnableNotification {
   })
   async enable(
     @SlashOption({
-      name: "link", description: "Lien du calendrier",
+      name: "link",
+      description: "Lien du calendrier",
       type: ApplicationCommandOptionType.String,
-      required: false
-    }) link: string,
+      required: false,
+    })
+    link: string,
     interaction: CommandInteraction
   ) {
     const embed = new EmbedBuilder()
-      .setTitle('Comment configurer les notifications MaDoc ?')
-      .setDescription('Il faut vous rendre sur [ce lien](https://madoc.univ-nantes.fr/calendar/export.php) puis exporter le calendrier et récupérer le lien pour le fournir avec cette commande.\nVous pouvez vous aider de l\'image ci-dessous :')
-      .setImage('https://s.matthieul.dev/ff6313df-190c-4097-a388-db2c07801a78');
+      .setTitle("Comment configurer les notifications MaDoc ?")
+      .setDescription(
+        "Il faut vous rendre sur [ce lien](https://madoc.univ-nantes.fr/calendar/export.php) puis exporter le calendrier et récupérer le lien pour le fournir avec cette commande.\nVous pouvez vous aider de l'image ci-dessous :"
+      )
+      .setImage("https://s.matthieul.dev/ff6313df-190c-4097-a388-db2c07801a78");
 
     if (!link) {
       return interaction.reply({
-        embeds: [embed]
+        embeds: [embed],
       });
     }
 
-    if (!link.startsWith('https://madoc.univ-nantes.fr/calendar/export_execute.php?userid=')) {
+    if (
+      !link.startsWith(
+        "https://madoc.univ-nantes.fr/calendar/export_execute.php?userid="
+      )
+    ) {
       return interaction.reply({
-        content: "Le lien entré est invalide !"
+        content: "Le lien entré est invalide !",
       });
     }
 
     const res = await axios({
       url: link,
-      method: 'GET'
+      method: "GET",
     });
 
     if (res.status !== 200) {
       return interaction.reply({
-        content: "Une erreur s'est produite !"
+        content: "Une erreur s'est produite !",
       });
     }
 
-    const query = await Database.query(
-      "SELECT * FROM user WHERE user_id = ?",
-      [interaction.user.id]
-    ).catch((err) => console.error(err));
+    const query = await Database.query("SELECT * FROM user WHERE user_id = ?", [
+      interaction.user.id,
+    ]).catch((err) => console.error(err));
     if (typeof query[0] === "object") {
       return interaction.reply({
-        content: "Les notifications ont déja été activées !"
+        content: "Les notifications ont déja été activées !",
       });
     }
 
-    Database.query(
-      "INSERT INTO user (user_id, link) values (?, ?)",
-      [interaction.user.id, link]
-    ).catch((err) => console.error(err));
+    Database.query("INSERT INTO user (user_id, link) values (?, ?)", [
+      interaction.user.id,
+      link,
+    ]).catch((err) => console.error(err));
 
     interaction.reply({
-      content: "Les notifications sont désormais activées !"
+      content: "Les notifications sont désormais activées !",
     });
   }
 }
