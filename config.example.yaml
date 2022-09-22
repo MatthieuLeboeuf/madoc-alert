@@ -1,0 +1,9 @@
+dev: true
+bot:
+  token: ""
+database:
+  host: ""
+  port: 3306
+  username: ""
+  password: ""
+  database: ""
