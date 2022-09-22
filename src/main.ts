@@ -6,6 +6,7 @@ import { Database } from "./database.js";
 import cron from "node-cron";
 import ical from 'ical';
 import axios from 'axios';
+import moment from 'moment';
 
 export const bot = new Client({
   // Discord intents
@@ -29,6 +30,7 @@ bot.once("ready", async () => {
   });
 
   // check
+  moment.locale('fr');
   cron.schedule('0 20 * * *', async () => {
     const messages = await Database.query(
       "SELECT * FROM user"
@@ -46,14 +48,17 @@ bot.once("ready", async () => {
         if (data.hasOwnProperty(k)) {
           const ev = data[k];
           if (ev.type == 'VEVENT') {
+            if (!ev.end) continue;
+            if ((ev.end?.getTime()/1000) > (Date.now()/1000) + 3600 * 72) continue;
             msg += `${msg === '' ? '' : '\n'}- (${ev.categories?.join(', ')}) **${ev.summary?.replace('se termine', '').replace('doit être effectué', '')}** `;
-            msg += `${ev.description?.replaceAll('\n', '')} à terminer pour le ${ev.end?.getDay()}/${ev.end?.getMonth()} à ${ev.end?.getHours()}:${ev.end?.getMinutes()}`;
+            msg += `${ev.description?.replaceAll('\n', '')} à terminer pour le ${moment(new Date(ev.end?.getTime())).format('llll')}`;
           }
         }
       }
       const embed = new EmbedBuilder()
-        .setTitle('Récapitulatif des evenements sur votre calendrier')
+        .setTitle('Récapitulatif des evenements à venir (72h)')
         .setDescription(msg)
+        .setColor('#ff9f43')
         .setTimestamp();
       bot.users.fetch(messages[f].user_id).then(async (user) => {
         await user.send({
