@@ -26,7 +26,7 @@ export class EnableNotification {
     const embed = new EmbedBuilder()
       .setTitle("Comment configurer les notifications MaDoc ?")
       .setDescription(
-        "Il faut vous rendre sur [ce lien](https://madoc.univ-nantes.fr/calendar/export.php) puis exporter le calendrier et récupérer le lien pour le fournir avec cette commande.\nVous pouvez vous aider de l'image ci-dessous :"
+        "Il faut tout d'abord vous connecter sur [madoc](https://madoc.univ-nantes.fr/login/index.php?authCAS=CAS) puis vous rendre sur [ce lien](https://madoc.univ-nantes.fr/calendar/export.php) pour exporter le calendrier et récupérer le lien pour le fournir avec cette commande.\nVous pouvez vous aider de l'image ci-dessous :"
       )
       .setImage("https://s.matthieul.dev/ff6313df-190c-4097-a388-db2c07801a78");
 
@@ -46,13 +46,15 @@ export class EnableNotification {
       });
     }
 
+    await interaction.deferReply();
+
     const res = await axios({
       url: link,
       method: "GET",
     });
 
     if (res.status !== 200) {
-      return interaction.reply({
+      return interaction.editReply({
         content: "Une erreur s'est produite !",
       });
     }
@@ -61,7 +63,7 @@ export class EnableNotification {
       interaction.user.id,
     ]).catch((err) => console.error(err));
     if (typeof query[0] === "object") {
-      return interaction.reply({
+      return interaction.editReply({
         content: "Les notifications ont déja été activées !",
       });
     }
@@ -71,7 +73,7 @@ export class EnableNotification {
       link,
     ]).catch((err) => console.error(err));
 
-    interaction.reply({
+    interaction.editReply({
       content: "Les notifications sont désormais activées !",
     });
   }
