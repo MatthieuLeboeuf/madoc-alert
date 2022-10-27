@@ -1,8 +1,10 @@
 import { CommandInteraction } from "discord.js";
-import { Discord, Slash } from "discordx";
-import { Database } from "../database.js";
+import { Discord, Slash, SlashGroup } from "discordx";
+import { Database } from "../../database.js";
 
 @Discord()
+@SlashGroup({ description: "Madoc", name: "madoc" })
+@SlashGroup("madoc")
 export class DisableNotification {
   @Slash({
     description: "Désactivation des notifications pour MaDoc",
@@ -24,7 +26,7 @@ export class DisableNotification {
       interaction.user.id,
     ]).catch((err) => console.error(err));
 
-    interaction.editReply({
+    await interaction.editReply({
       content: "Les notifications sont désormais désactivées !",
     });
   }

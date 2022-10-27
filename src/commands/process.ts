@@ -5,7 +5,7 @@ import process from "./../cron.js";
 @Discord()
 export class EnableNotification {
   @Slash({
-    description: "Lancer la cron madoc manuellement",
+    description: "Lancer la cron manuellement",
     name: "process",
     defaultMemberPermissions: 0n,
     dmPermission: false,
@@ -13,7 +13,7 @@ export class EnableNotification {
   async process(interaction: CommandInteraction) {
     await interaction.deferReply();
     await process(interaction.client);
-    interaction.editReply({
+    await interaction.editReply({
       content: "Cron terminée",
     });
   }
