@@ -3,7 +3,7 @@ import { Interaction } from "discord.js";
 import { Client } from "discordx";
 import { config } from "./config.js";
 import { Database } from "./database.js";
-import process from "./cron.js";
+import processMadoc from "./madoc-cron.js";
 import cron from "node-cron";
 
 export const bot = new Client({
@@ -24,7 +24,7 @@ bot.once("ready", async () => {
     });
 
   cron.schedule("0 20 * * *", async () => {
-    await process(bot);
+    await processMadoc(bot);
   });
 
   console.log(`Logged in as ${bot.user?.tag}`);

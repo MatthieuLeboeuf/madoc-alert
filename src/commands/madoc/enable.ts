@@ -61,16 +61,17 @@ export class EnableNotification {
       });
     }
 
-    const query = await Database.query("SELECT * FROM user WHERE user_id = ?", [
-      interaction.user.id,
-    ]).catch((err) => console.error(err));
+    const query = await Database.query(
+      "SELECT * FROM madoc WHERE user_id = ?",
+      [interaction.user.id]
+    ).catch((err) => console.error(err));
     if (typeof query[0] === "object") {
       return interaction.editReply({
         content: "Les notifications ont déja été activées !",
       });
     }
 
-    Database.query("INSERT INTO user (user_id, madoc_link) values (?, ?)", [
+    Database.query("INSERT INTO madoc (user_id, madoc_link) values (?, ?)", [
       interaction.user.id,
       link,
     ]).catch((err) => console.error(err));
