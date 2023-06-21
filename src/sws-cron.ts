@@ -1,5 +1,6 @@
 import axios from "axios";
 import moment from "moment";
+import momentTimezone from "moment-timezone";
 import { Database } from "./database.js";
 import { EmbedBuilder } from "discord.js";
 
@@ -23,20 +24,37 @@ export default async (client: any) => {
         Authorization: "JBAuth " + auth,
       },
     });
-    const d = new Date();
+    let t = res.data.token;
+    t = t.split(".")[1];
+    t = t.replace("-", "+").replace("_", "/");
+    t = JSON.parse(
+      decodeURIComponent(
+        Array.prototype.map
+          .call(
+            atob(t),
+            (e) => "%" + ("00" + e.charCodeAt(0).toString(16)).slice(-2)
+          )
+          .join("")
+      )
+    );
+
     const res2 = await axios({
-      url: `https://app.sowesign.com/api/student-portal/courses?from=${d.getFullYear()}-${
-        d.getMonth() - 1
-      }-${d.getDate()}&to=${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+      url:
+        "https://app.sowesign.com/api/student-portal/students/" +
+        t.entity.id +
+        "/presenttokens?limit=50",
       method: "GET",
       headers: {
         Authorization: "Bearer " + res.data.token,
       },
     });
 
+    const signed = [];
+
+    const d = momentTimezone().tz("Europe/Paris").format();
     for (let i = 0; i < res2.data.length; i++) {
-      if (res2.data[i].signature.status !== "present-token") continue;
-      const res3 = await axios({
+      const c = new Date(res2.data[i].signature.collectedOn);
+      await axios({
         url: "https://app.sowesign.com/api/student-portal/signatures",
         method: "POST",
         headers: {
@@ -44,30 +62,32 @@ export default async (client: any) => {
         },
         data: {
           campus: null,
-          collectedOn: d.toISOString(),
+          collectedOn: d.toString(),
           collectMode: "studentPortal",
           course: res2.data[i].id,
-          file: "",
-          md5: "",
+          file: messages[f].signature,
+          md5: messages[f].md5,
           place: null,
           recovery: true,
+          recoveryBy: `${t.entity.lastName} ${t.entity.firstName}`,
+          recoveryReason: `Jeton de présence posé par le formateur le ${moment(
+            c
+          ).format("DD/MM/YYYY")} à ${moment(c).format("HH:mm:ss")}`,
           recoveryRole: "Student",
-          signedOn: d.toISOString(),
-          signer: 1,
+          signedOn: d.toString(),
+          signer: t.entity.id,
           status: "present",
         },
       });
+      signed.push(res2.data[i].name);
     }
 
-    let msg = "";
     const embed = new EmbedBuilder()
-      .setTitle("Récapitulatif des evenements à venir (72h)")
+      .setTitle("Signatures SoWeSign")
       .setDescription(
-        msg === ""
-          ? "Il y a aucuns événements dans les 3 prochains jours !"
-          : msg
+        `J'ai fait ${signed.length} signatures : \n${signed.join("\n")}`
       )
-      .setColor(msg === "" ? "#10ac84" : "#ff9f43")
+      .setColor("#10ac84")
       .setTimestamp();
     client.users.fetch(messages[f].user_id).then(async (user: any) => {
       await user.send({

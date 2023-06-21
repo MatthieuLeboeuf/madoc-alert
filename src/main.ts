@@ -4,6 +4,7 @@ import { Client } from "discordx";
 import { config } from "./config.js";
 import { Database } from "./database.js";
 import processMadoc from "./madoc-cron.js";
+import processSws from "./sws-cron.js";
 import cron from "node-cron";
 
 export const bot = new Client({
@@ -25,6 +26,10 @@ bot.once("ready", async () => {
 
   cron.schedule("0 20 * * *", async () => {
     await processMadoc(bot);
+  });
+
+  cron.schedule("0 */2 * * *", async () => {
+    await processSws(bot);
   });
 
   console.log(`Logged in as ${bot.user?.tag}`);

@@ -39,14 +39,11 @@ export default async (client: any) => {
         }
       }
     }
+    if (msg === "") continue;
     const embed = new EmbedBuilder()
       .setTitle("Récapitulatif des evenements à venir (72h)")
-      .setDescription(
-        msg === ""
-          ? "Il y a aucuns événements dans les 3 prochains jours !"
-          : msg
-      )
-      .setColor(msg === "" ? "#10ac84" : "#ff9f43")
+      .setDescription(msg)
+      .setColor("#ff9f43")
       .setTimestamp();
     client.users.fetch(messages[f].user_id).then(async (user: any) => {
       await user.send({
