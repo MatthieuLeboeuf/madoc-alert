@@ -82,6 +82,7 @@ export default async (client: any) => {
       signed.push(res2.data[i].name);
     }
 
+    if (signed.length === 0) continue;
     const embed = new EmbedBuilder()
       .setTitle("Signatures SoWeSign")
       .setDescription(
