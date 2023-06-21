@@ -48,7 +48,7 @@ export class EnableNotification {
       });
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
 
     const res = await axios({
       url: link,

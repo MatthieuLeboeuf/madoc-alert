@@ -36,7 +36,7 @@ export class EnableNotification {
     pin_code: string,
     interaction: CommandInteraction
   ) {
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
 
     const auth = btoa(institution_code + identifier_code + pin_code);
 
@@ -120,7 +120,9 @@ export class EnableNotification {
     ).catch((err) => console.error(err));
 
     await interaction.editReply({
-      content: "Les signatures sont désormais activées !",
+      content:
+        "Les signatures sont désormais activées !\nCette signature sera utilisée :\n" +
+        url,
     });
   }
 }
