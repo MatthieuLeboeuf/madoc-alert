@@ -82,19 +82,20 @@ export default async (client: any) => {
       signed.push(res2.data[i].name);
     }
 
-    if (signed.length === 0) continue;
-    const embed = new EmbedBuilder()
-      .setTitle("Signatures SoWeSign")
-      .setDescription(
-        `J'ai fait ${signed.length} signatures : \n${signed.join("\n")}`
-      )
-      .setColor("#10ac84")
-      .setTimestamp();
-    client.users.fetch(messages[f].user_id).then(async (user: any) => {
-      await user.send({
-        embeds: [embed],
+    if (signed.length !== 0) {
+      const embed = new EmbedBuilder()
+        .setTitle("Signatures SoWeSign")
+        .setDescription(
+          `J'ai fait ${signed.length} signatures : \n${signed.join("\n")}`
+        )
+        .setColor("#10ac84")
+        .setTimestamp();
+      client.users.fetch(messages[f].user_id).then(async (user: any) => {
+        await user.send({
+          embeds: [embed],
+        });
       });
-    });
+    }
     f += 1;
   }
 };

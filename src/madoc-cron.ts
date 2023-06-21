@@ -39,17 +39,18 @@ export default async (client: any) => {
         }
       }
     }
-    if (msg === "") continue;
-    const embed = new EmbedBuilder()
-      .setTitle("Récapitulatif des evenements à venir (72h)")
-      .setDescription(msg)
-      .setColor("#ff9f43")
-      .setTimestamp();
-    client.users.fetch(messages[f].user_id).then(async (user: any) => {
-      await user.send({
-        embeds: [embed],
+    if (msg !== "") {
+      const embed = new EmbedBuilder()
+        .setTitle("Récapitulatif des evenements à venir (72h)")
+        .setDescription(msg)
+        .setColor("#ff9f43")
+        .setTimestamp();
+      client.users.fetch(messages[f].user_id).then(async (user: any) => {
+        await user.send({
+          embeds: [embed],
+        });
       });
-    });
+    }
     f += 1;
   }
 };
