@@ -79,6 +79,7 @@ export default async (client: any) => {
           status: "present",
         },
       });
+      console.log('signé : '+ res2.data[i].name+'\n')
       signed.push(res2.data[i].name);
     }
 
