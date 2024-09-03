@@ -59,7 +59,7 @@ export default async (client: any) => {
         checkCode: "PXFTS9y5zE8QmuBdU8kcmngTVinIlu2WVWPF5FHwIJaKf0jkidt4XyMOEgUxDBlu3VgvHOyb6hMCCI7xis5jsxVxg6yChezZaMk8shxqRRyMhMdN6z1vCHWXikOkwBqTaBzXPHlYsifXbakcP7A2cS",
         signature: "LBJtKx7c0doXbD3MpQhghmO6GlpFDuz0NK05wWO9OfEU0TnNEwZqNyz9AndX51wH2CKMMdSuL0aNlrAdowsTMOEv40UkqwpQG2lF9MqqT9f6sDQfOWg6JV5jWWyFnfOVa1iilrejwcx5uHMFQYb0TU",
         documentToSign: "vcoiPrCLNpKZzUHkI1u9TJi6Sy8grL7lRUdxBdzjQJ33PtOAzR5w5tOAVIitTnwCy4tPAX6TCNPFHIv2mswq8IAtJgr8Vl1ueYD6ALU5LkTmeh7PX6kvhz5nKIph0eoAzYbMSpjN3JTWSXZWb4qMtd",
-      },
+      }
       const data = {
         campus: null,
         collectedOn: d.toString(),
