@@ -49,6 +49,7 @@ export default async (client: any) => {
         Authorization: "Bearer " + res.data.token,
       },
     });
+    console.log(`vérification : ${t.entity.lastName} ${t.entity.firstName} (${t.entity.id})`)
 
     const signed = [];
 
