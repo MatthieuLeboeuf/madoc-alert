@@ -3,6 +3,7 @@ import moment from "moment";
 import momentTimezone from "moment-timezone";
 import { Database } from "./database.js";
 import { EmbedBuilder } from "discord.js";
+import CryptoJS from "crypto-js";
 
 export default async (client: any) => {
   moment.locale("fr");
@@ -54,30 +55,37 @@ export default async (client: any) => {
     const d = momentTimezone().tz("Europe/Paris").format();
     for (let i = 0; i < res2.data.length; i++) {
       const c = new Date(res2.data[i].signature.collectedOn);
+      const DP = {
+        checkCode: "PXFTS9y5zE8QmuBdU8kcmngTVinIlu2WVWPF5FHwIJaKf0jkidt4XyMOEgUxDBlu3VgvHOyb6hMCCI7xis5jsxVxg6yChezZaMk8shxqRRyMhMdN6z1vCHWXikOkwBqTaBzXPHlYsifXbakcP7A2cS",
+        signature: "LBJtKx7c0doXbD3MpQhghmO6GlpFDuz0NK05wWO9OfEU0TnNEwZqNyz9AndX51wH2CKMMdSuL0aNlrAdowsTMOEv40UkqwpQG2lF9MqqT9f6sDQfOWg6JV5jWWyFnfOVa1iilrejwcx5uHMFQYb0TU",
+        documentToSign: "vcoiPrCLNpKZzUHkI1u9TJi6Sy8grL7lRUdxBdzjQJ33PtOAzR5w5tOAVIitTnwCy4tPAX6TCNPFHIv2mswq8IAtJgr8Vl1ueYD6ALU5LkTmeh7PX6kvhz5nKIph0eoAzYbMSpjN3JTWSXZWb4qMtd",
+      },
+      const data = {
+        campus: null,
+        collectedOn: d.toString(),
+        collectMode: "studentPortal",
+        course: res2.data[i].id,
+        file: messages[f].signature,
+        md5: messages[f].md5,
+        place: null,
+        recovery: true,
+        recoveryBy: `${t.entity.lastName} ${t.entity.firstName}`,
+        recoveryReason: `Jeton de présence posé par le formateur le ${moment(
+          c
+        ).format("DD/MM/YYYY")} à ${moment(c).format("HH:mm:ss")}`,
+        recoveryRole: "Student",
+        signedOn: d.toString(),
+        signer: t.entity.id,
+        status: "present",
+      };
+      const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data),`${DP["signature"]}${t.entity.id}${res2.data[i].id}`).toString();
       await axios({
-        url: "https://app.sowesign.com/api/student-portal/signatures",
+        url: "https://app.sowesign.com/api/student-portal/courses/"+res2.data[i].id+"/signatures",
         method: "POST",
         headers: {
           Authorization: "Bearer " + res.data.token,
         },
-        data: {
-          campus: null,
-          collectedOn: d.toString(),
-          collectMode: "studentPortal",
-          course: res2.data[i].id,
-          file: messages[f].signature,
-          md5: messages[f].md5,
-          place: null,
-          recovery: true,
-          recoveryBy: `${t.entity.lastName} ${t.entity.firstName}`,
-          recoveryReason: `Jeton de présence posé par le formateur le ${moment(
-            c
-          ).format("DD/MM/YYYY")} à ${moment(c).format("HH:mm:ss")}`,
-          recoveryRole: "Student",
-          signedOn: d.toString(),
-          signer: t.entity.id,
-          status: "present",
-        },
+        data: encryptedData,
       });
       console.log('signé : '+ res2.data[i].name+'\n')
       signed.push(res2.data[i].name);
