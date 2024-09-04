@@ -72,6 +72,12 @@ export class EnableNotification {
       });
     }
 
+    if (res2.data.length === 0) {
+      return interaction.editReply({
+        content: "Je n'ai pas trouvé de signature récente sur votre compte !",
+      });
+    }
+
     let url;
 
     for (let i = 0; i < res2.data.length; i++) {
