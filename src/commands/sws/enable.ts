@@ -58,8 +58,8 @@ export class EnableNotification {
 
     const res2 = await axios({
       url: `https://app.sowesign.com/api/student-portal/courses?from=${d.getFullYear()}-${
-        d.getMonth() - 1
-      }-${d.getDate()}&to=${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+        d.getMonth()
+      }-${d.getDate()}&to=${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`,
       method: "GET",
       headers: {
         Authorization: "Bearer " + res.data.token,
